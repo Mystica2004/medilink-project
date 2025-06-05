@@ -20,6 +20,10 @@ mongoose.connect(process.env.MONGO_URI, {})
   console.log("mongo db connection error : ", error)
 })
 
+// app.get('/api/greeting', (req, res) => {
+//   res.json({ message: 'Hello from MediLink backend!' });
+// });
+
 // Middleware
 app.use(cors());
 app.use(express.json());
