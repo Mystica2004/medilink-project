@@ -1,25 +1,32 @@
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
 
 function verifyAccessToken(req, res, next) {
     try {
-        if(req.headers.authorization == null) {
-            throw "invalid access"
-        }
-        const verifiedData = jwt.verify(req.headers.authorization, process.env.SECRET)
-        console.log("verify : ", verifiedData)
+        const header = req.headers.authorization;
 
-        req.userEmail = verifiedData.email 
-        req.userRole = verifiedData.role
+        if (!header || !header.startsWith("Bearer ")) {
+            throw new Error("Missing or malformed token");
+        }
+
+        const token = header.split(" ")[1];
+
+        const verifiedData = jwt.verify(token, process.env.SECRET);
+        console.log("✅ Token verified:", verifiedData);
+
+        req.userEmail = verifiedData.email;
+        req.userRole = verifiedData.role;
+
+        next();
     } catch (error) {
+        console.error("❌ JWT Error:", error.message || error);
         return res.status(403).json({
             message: "authentication failed",
             error: "invalid access",
             data: null
-         })
+        });
     }
-    next()
 }
 
 module.exports = {
     verifyAccessToken
-}
+};
